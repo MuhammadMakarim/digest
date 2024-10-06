@@ -9,6 +9,8 @@
         <include .../>
         <exclude .../>
         -->
+        <include path="C:\Users\zakhi\StudioProjects\digest" />
+        <exclude path="C:\Users\zakhi\StudioProjects\digest" />
     </cloud-backup>
     <!--
     <device-transfer>
