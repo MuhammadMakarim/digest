@@ -17,6 +17,12 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
     }
+    versionCatalogs {
+        create("libs") {
+            library("mqttClient", "org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.4")
+            library("mqttAndroidService", "org.eclipse.paho:org.eclipse.paho.android.service:1.1.1")
+        }
+    }
 }
 
 rootProject.name = "digest"
