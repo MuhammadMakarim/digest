@@ -31,7 +31,7 @@ fun DigSplash() {
         animationSpec = infiniteRepeatable(
             animation = tween(2000, easing = LinearEasing), // 2000ms for smooth rotation
             repeatMode = RepeatMode.Restart
-        ), label = ""
+        )
     )
 
     // Animate the color of the arc from white to light blue
@@ -41,7 +41,7 @@ fun DigSplash() {
         animationSpec = infiniteRepeatable(
             animation = tween(durationMillis = 2000, easing = LinearEasing),
             repeatMode = RepeatMode.Restart
-        ), label = ""
+        )
     )
 
     Box(

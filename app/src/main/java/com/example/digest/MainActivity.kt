@@ -7,65 +7,76 @@ import android.os.Looper
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import com.example.digest.ui.theme.DigestTheme
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.size
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import org.eclipse.paho.client.mqttv3.*
+import androidx.compose.ui.tooling.preview.Preview
+import com.example.digest.ui.theme.DigestTheme
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 
 class MainActivity : ComponentActivity() {
-    private lateinit var mqttClientManager: MqttClientManager
-    private var messageState by mutableStateOf("")
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             DigestTheme {
-                DigSplash()
+                DigSplashPreview()
             }
         }
-        mqttClientManager = MqttClientManager(
-            applicationContext,
-            "tcp://broker.emqx.io:1883",
-            "galihashari",
-            { message ->
-                messageState = message
-            }
-        )
-        mqttClientManager.connect()
-
         Handler(Looper.getMainLooper()).postDelayed({
-            setContent {
-                DigestTheme {
-                    Surface(
-                        modifier = Modifier.fillMaxSize(),
-                        color = MaterialTheme.colorScheme.background
-                    ) {
-                        MqttView(messageState)
-                    }
-                }
-            }
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
+            finish()
         }, 3000)
     }
 
-    @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    fun MqttView(messageState: String) {
-        Column {
-            TopAppBar(title = { Text(text = "MQTT message") })
-            Surface {
-                Column {
-                    Text(text = "MESSAGE:")
-                    Text(text = messageState)
+    fun DigSplash() {
+        Box(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.splashscreen_bgn),
+                contentDescription = "Background Image",
+                modifier = Modifier.fillMaxSize()
+            )
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier.size(1000.dp)
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.loader),
+                        contentDescription = "Loader Logo",
+                        modifier = Modifier.size(950.dp)
+                    )
+                    Image(
+                        painter = painterResource(id = R.drawable.logo_digester),
+                        contentDescription = "DigestSense Logo",
+                        modifier = Modifier.size(225.dp)
+                    )
                 }
             }
         }
     }
+
+    @Preview(showBackground = true)
+    @Composable
+    fun DigSplashPreview() {
+        DigestTheme {
+            DigSplash()
+        }
+    }
 }
+
