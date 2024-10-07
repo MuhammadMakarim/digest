@@ -1,29 +1,60 @@
 package com.example.digest
 
+import androidx.compose.animation.animateColor
+import androidx.compose.animation.core.*
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.layout.ContentScale
 import com.example.digest.ui.theme.DigestTheme
 
 @Composable
 fun DigSplash() {
+    // Infinite transition for continuous rotation animation
+    val infiniteTransition = rememberInfiniteTransition()
+
+    // Animate rotation from 0 to 360 degrees for the rotating line
+    val rotation = infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 360f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(2000, easing = LinearEasing), // 2000ms for smooth rotation
+            repeatMode = RepeatMode.Restart
+        )
+    )
+
+    // Animate the color of the arc from white to light blue
+    val colorTransition = infiniteTransition.animateColor(
+        initialValue = Color.White, // Starting color
+        targetValue = Color(0xFF3CE5FC), // Target color
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 2000, easing = LinearEasing),
+            repeatMode = RepeatMode.Restart
+        )
+    )
+
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
+        // Use ContentScale.Crop to ensure the background image covers the entire screen
         Image(
             painter = painterResource(id = R.drawable.splashscreen_bgn),
             contentDescription = "Background Image",
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop // This ensures the image fills the entire area
         )
+
         Column(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -31,17 +62,45 @@ fun DigSplash() {
         ) {
             Box(
                 contentAlignment = Alignment.Center,
-                modifier = Modifier.size(1000.dp)
+                modifier = Modifier.size(300.dp) // Adjusted size for the circular line and logo
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.loader),
-                    contentDescription = "Loader Logo",
-                    modifier = Modifier.size(950.dp)
-                )
+                // Rotating circular line animation
+                Canvas(
+                    modifier = Modifier
+                        .size(250.dp)
+                        .graphicsLayer(rotationZ = rotation.value) // Apply rotation animation
+                ) {
+                    drawArc(
+                        color = colorTransition.value, // Use animated color
+                        startAngle = 0f,
+                        sweepAngle = 270f, // Arc angle, adjust if needed
+                        useCenter = false,
+                        topLeft = Offset(0f, 0f),
+                        size = size,
+                        style = Stroke(width = 10f) // Line width
+                    )
+                }
+
+                // Adding the ellipsis with blur effect
+                Canvas(
+                    modifier = Modifier.size(250.dp) // Same size as the rotating arc
+                ) {
+                    drawArc(
+                        color = Color(0xFF11DCE8).copy(alpha = 0.5f), // Ellipse color with some transparency
+                        startAngle = 0f,
+                        sweepAngle = 360f,
+                        useCenter = false,
+                        topLeft = Offset(0f, 0f),
+                        size = size,
+                        style = Stroke(width = 10f) // Width of the ellipse
+                    )
+                }
+
+                // Static DigestSense logo in the center of the circular line
                 Image(
                     painter = painterResource(id = R.drawable.logo_digester),
                     contentDescription = "DigestSense Logo",
-                    modifier = Modifier.size(225.dp)
+                    modifier = Modifier.size(200.dp)
                 )
             }
         }
